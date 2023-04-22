@@ -10,8 +10,8 @@ def main():
     for seed in range(5):
         df_ = EpilepsyClassifier(path, seed=seed, timesteps=256) 
 
-    Time_df = Time_df.append(df_.return_results())
-
+    Time_df = pd.concat([Time_df, df_.return_results()])
+    
     print(Time_df)
     Time_df.to_csv('TimeStepDF_.csv')
 
