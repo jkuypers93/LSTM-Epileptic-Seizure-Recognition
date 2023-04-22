@@ -121,8 +121,7 @@ class EpilepsyClassifier:
         df_.loc[self.seed, 'Val_loss'] = best_val_loss
 
         self.df_best = pd.concat([self.df_best, df_])
-        # self.df_best = self.df_best.append(df_)
-
+        
         #PLOTS
         acc = history.history['accuracy']
         val_acc = history.history['val_accuracy']
