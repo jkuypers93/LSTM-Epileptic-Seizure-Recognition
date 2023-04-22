@@ -4,7 +4,7 @@ import sys
 np.set_printoptions(threshold=sys.maxsize)
 from keras.layers import Dense, LSTM, Dropout, CuDNNLSTM, TimeDistributed, Flatten, AveragePooling1D, GlobalAveragePooling1D
 from sklearn.model_selection import train_test_split
-from tensorflow import set_random_seed
+import tensorflow as tf
 from keras.callbacks import CSVLogger
 import seaborn as sns
 from keras import regularizers
@@ -89,7 +89,7 @@ class EpilepsyClassifier:
     def model_(self):
         csv_logger = CSVLogger('LSTM_Model_Logger.log')
 
-        set_random_seed(self.seed)
+        tf.random.set_seed(self.seed)
         model = Sequential()
         ##without regularizer
         model.add(LSTM(15, input_shape=(self.timesteps, self.data_dim), return_sequences=True))
@@ -107,8 +107,8 @@ class EpilepsyClassifier:
                             callbacks=[csv_logger], batch_size=64, epochs=40)
 
 
-        best_val = history.history['val_acc'][-1]
-        best_acc = history.history['acc'][-1]
+        best_val = history.history['val_accuracy'][-1]
+        best_acc = history.history['accuracy'][-1]
         best_loss = history.history['loss'][-1]
         best_val_loss = history.history['val_loss'][-1]
 
@@ -120,11 +120,12 @@ class EpilepsyClassifier:
         df_.loc[self.seed, 'Loss'] = best_loss
         df_.loc[self.seed, 'Val_loss'] = best_val_loss
 
-        self.df_best = self.df_best.append(df_)
+        self.df_best = pd.concat([self.df_best, df_])
+        # self.df_best = self.df_best.append(df_)
 
         #PLOTS
-        acc = history.history['acc']
-        val_acc = history.history['val_acc']
+        acc = history.history['accuracy']
+        val_acc = history.history['val_accuracy']
         loss = history.history['loss']
         val_loss = history.history['val_loss']
         epochs = range(1, len(acc) + 1)
